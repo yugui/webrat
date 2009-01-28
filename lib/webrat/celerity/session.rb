@@ -38,6 +38,14 @@ module Webrat #:nodoc:
       end
     end
 
+    def clear_cookies
+      container.clear_cookies
+    end
+
+    def execute_script(source)
+      container.execute_script(source)
+    end
+
     def current_scope
       scopes.last || base_scope
     end
@@ -63,7 +71,6 @@ module Webrat #:nodoc:
     def_delegators :current_scope, :choose,        :chooses
     def_delegators :current_scope, :click_button,  :clicks_button
     def_delegators :current_scope, :click_link,    :clicks_link
-    def_delegators :current_scope, :execute_script
     def_delegators :current_scope, :fill_in,       :fills_in
     def_delegators :current_scope, :field_by_xpath
     def_delegators :current_scope, :field_labeled

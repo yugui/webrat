@@ -44,6 +44,10 @@ module Webrat
       def execute_script(source)
         webrat_session.execute_script(source)
       end
+
+      def clear_cookies
+        webrat_session.clear_cookies
+      end
     end
   end
 end

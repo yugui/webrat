@@ -25,6 +25,7 @@ module Webrat
   # To use Webrat's Celerity support, activate it with (for example, in your <tt>env.rb</tt>):
   #
   #   require "webrat"
+  #   require "webrat/celerity"
   #
   #   Webrat.configure do |config|
   #     config.mode = :celerity

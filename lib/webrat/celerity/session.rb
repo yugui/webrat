@@ -24,6 +24,7 @@ module Webrat #:nodoc:
     end
 
     def visit(url = nil, http_method = :get, data = {})
+      reset
       # TODO querify data
       @current_url = container.goto(absolute_url(url))
     end
@@ -39,6 +40,7 @@ module Webrat #:nodoc:
     webrat_deprecate :clicks_link_within, :click_link_within
 
     def reload
+      reset
       container.refresh
     end
 
@@ -137,5 +139,13 @@ module Webrat #:nodoc:
         end
       end
     end
+
+  private
+
+    def reset
+      @_scopes     = nil
+      @_base_scope = nil
+    end
+
   end
 end

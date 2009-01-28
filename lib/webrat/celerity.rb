@@ -48,6 +48,10 @@ module Webrat
       def clear_cookies
         webrat_session.clear_cookies
       end
+
+      def within_frame(name, &block)
+        webrat_session.within_frame(name, &block)
+      end
     end
   end
 end

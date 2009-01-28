@@ -6,14 +6,6 @@ module Webrat
       @container = container
     end
 
-    def self.from_container(container)
-      new(container)
-    end
-
-    def self.from_element(element)
-      new(element.container)
-    end
-
     def check(id_or_name_or_label, value = true)
       elem = element_locator(id_or_name_or_label, :check_box)
       elem.set(value)

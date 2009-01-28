@@ -55,16 +55,27 @@ module Webrat #:nodoc:
     end
 
     def base_scope
-      @_base_scope ||= CelerityScope.from_container(container)
+      @_base_scope ||= CelerityScope.new(container)
     end
 
     def within(selector)
       xpath = Webrat::XML.css_to_xpath(selector).first
-      scope = CelerityScope.from_element(container.element_by_xpath(xpath))
+      scope = CelerityScope.new(container.element_by_xpath(xpath))
       scopes.push(scope)
       ret = yield
       scopes.pop
       return ret
+    end
+
+    def within_frame(name)
+      scope = CelerityScope.new(container.frame(:name => name))
+      scopes.push(scope)
+      if block_given?
+        ret = yield
+        scopes.pop
+        return ret
+      end
+      scope
     end
 
     def_delegators :current_scope, :check,         :checks

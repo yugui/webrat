@@ -63,6 +63,10 @@ module Webrat
 
     webrat_deprecate :fills_in, :fill_in
 
+    def response_body
+      container.html
+    end
+
     def select(option_text, options = {})
       elem = element_locator(options[:from], :select_list)
       elem.select(option_text)

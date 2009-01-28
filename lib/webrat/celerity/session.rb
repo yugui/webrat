@@ -23,10 +23,6 @@ module Webrat #:nodoc:
       CelerityResponse.new(response_body)
     end
 
-    def response_body
-      container.html
-    end
-
     def visit(url = nil, http_method = :get, data = {})
       # TODO querify data
       @current_url = container.goto(absolute_url(url))
@@ -96,6 +92,7 @@ module Webrat #:nodoc:
     def_delegators :current_scope, :field_by_xpath
     def_delegators :current_scope, :field_labeled
     def_delegators :current_scope, :field_with_id
+    def_delegators :current_scope, :response_body
     def_delegators :current_scope, :select,        :selects
     def_delegators :current_scope, :uncheck,       :unchecks
 

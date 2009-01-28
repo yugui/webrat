@@ -54,7 +54,6 @@ module Webrat
     def initialize # :nodoc:
       self.open_error_files = true
       self.parse_with_nokogiri = !Webrat.on_java?
-      self.application_environment = :selenium
       self.application_port = 3001
       self.application_address = 'localhost'
       self.selenium_server_port = 4444
@@ -82,6 +81,17 @@ module Webrat
       else
         require("webrat/#{mode}")
       end
+    end
+
+    # Allows setting of the app server's environment. Selenium uses :selenium
+    # by default. Celerity uses :celerity by default.
+    def application_environment=(environment)
+      @application_environment = environment.to_sym
+    end
+
+    # Returns the app server's environment. Defaulted to be equal to the mode.
+    def application_environment
+      @application_environment ||= self.mode
     end
 
   end

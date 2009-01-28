@@ -32,6 +32,8 @@ module Webrat #:nodoc:
       @current_url = container.goto(absolute_url(url))
     end
 
+    webrat_deprecate :visits, :visit
+
     def click_link_within(selector, text_or_title_or_id)
       within(selector) do
         click_link(text_or_title_or_id)

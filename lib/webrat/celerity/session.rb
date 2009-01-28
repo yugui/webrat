@@ -38,6 +38,14 @@ module Webrat #:nodoc:
       end
     end
 
+    webrat_deprecate :clicks_link_within, :click_link_within
+
+    def reload
+      container.refresh
+    end
+
+    webrat_deprecate :reloads, :reload
+
     def clear_cookies
       container.clear_cookies
     end

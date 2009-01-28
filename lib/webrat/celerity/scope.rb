@@ -28,20 +28,26 @@ module Webrat
 
     webrat_deprecate :chooses, :choose
 
-    def click_button(value_or_id_or_alt = nil)
-      if value_or_id_or_alt
-        elem = element_locator(value_or_id_or_alt, :button, :value, :id, :text, :alt)
-      else
-        elem = container.buttons[0] # celerity should really include Enumerable here
+    def click_button(value_or_id_or_alt = nil, options = {})
+      options = value_or_id_or_alt if value_or_id_or_alt.is_a?(Hash)
+
+      with_handler options.delete(:confirm) do
+        if value_or_id_or_alt
+          elem = element_locator(value_or_id_or_alt, :button, :value, :id, :text, :alt)
+        else
+          elem = container.buttons[0] # celerity should really include Enumerable here
+        end
+        elem.click
       end
-      elem.click
     end
 
     webrat_deprecate :clicks_button, :click_button
 
     def click_link(text_or_title_or_id, options = {})
-      elem = element_locator(text_or_title_or_id, :link, :text, :title, :id)
-      elem.click
+      with_handler options.delete(:confirm) do
+        elem = element_locator(text_or_title_or_id, :link, :text, :title, :id)
+        elem.click
+      end
     end
 
     webrat_deprecate :clicks_link, :click_link
@@ -85,5 +91,11 @@ module Webrat
       CelerityLocator.new(container, locator, element, *how).locate!
     end
 
+    def with_handler(proc, &block)
+      old_handler = container.browser.webclient.confirm_handler
+      container.browser.webclient.confirm_handler = proc
+      block.call
+      container.browser.webclient.confirm_handler = old_handler
+    end
   end
 end

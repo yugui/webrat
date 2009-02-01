@@ -2,6 +2,7 @@ require "webrat/celerity/session"
 require "webrat/celerity/scope"
 require "webrat/celerity/locator"
 require "webrat/celerity/core_ext/button"
+require "webrat/celerity/core_ext/frame"
 require "webrat/celerity/core_ext/socket"
 
 module Webrat

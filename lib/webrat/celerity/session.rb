@@ -101,9 +101,8 @@ module Webrat #:nodoc:
   protected
 
     def container
-      return $browser if $browser
-      setup
-      $browser
+      setup unless $setup_done
+      @_browser ||= ::Celerity::Browser.new(:browser => :firefox)
     end
 
     def absolute_url(url) #:nodoc:
@@ -124,12 +123,8 @@ module Webrat #:nodoc:
       silence_stream(STDOUT) do
         Webrat.start_app_server
       end
-      create_browser
       teardown_at_exit
-    end
-
-    def create_browser #:nodoc:
-      $browser = ::Celerity::Browser.new(:browser => :firefox)
+      $setup_done = true
     end
 
     def teardown_at_exit #:nodoc:

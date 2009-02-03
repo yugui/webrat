@@ -1,4 +1,3 @@
-gem "jarib-celerity", ">= 0.0.5"
 require "celerity"
 require "forwardable"
 

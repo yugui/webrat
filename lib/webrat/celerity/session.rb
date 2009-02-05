@@ -102,7 +102,7 @@ module Webrat #:nodoc:
 
     def container
       setup unless $setup_done
-      @_browser ||= ::Celerity::Browser.new(:browser => :firefox, :log_level => :off)
+      @_browser ||= ::Celerity::Browser.new(:browser => :firefox, :log_level => :off, :resynchronize => true)
     end
 
     def absolute_url(url) #:nodoc:

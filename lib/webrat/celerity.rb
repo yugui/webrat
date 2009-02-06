@@ -4,6 +4,7 @@ require "webrat/celerity/locator"
 require "webrat/celerity/core_ext/button"
 require "webrat/celerity/core_ext/container"
 require "webrat/celerity/core_ext/frame"
+require "webrat/celerity/core_ext/generic_field"
 require "webrat/celerity/core_ext/socket"
 
 module Webrat

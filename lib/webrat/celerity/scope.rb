@@ -45,15 +45,15 @@ module Webrat
     webrat_deprecate :clicks_link, :click_link
 
     def field_by_xpath(xpath)
-      element_locator(xpath, :text_field, :xpath)
+      element_locator(xpath, :generic_field, :xpath)
     end
 
     def field_labeled(label)
-      element_locator(label, :text_field, :label)
+      element_locator(label, :generic_field, :label)
     end
 
     def field_with_id(id)
-      element_locator(id, :text_field, :id)
+      element_locator(id, :generic_field, :id)
     end
 
     def fill_in(id_or_name_or_label, options = {})

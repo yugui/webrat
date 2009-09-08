@@ -37,7 +37,9 @@ module Webrat
         end
 
         def merb_command
-          if File.exist?('bin/merb')
+          if Webrat.configuration.application_command
+            merb_cmd = Webrat.configuration.application_command
+          elsif File.exist?('bin/merb')
             merb_cmd = 'bin/merb'
           else
             merb_cmd = 'merb'

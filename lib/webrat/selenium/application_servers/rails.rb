@@ -38,6 +38,14 @@ module Webrat
         "mongrel_rails stop -c #{RAILS_ROOT} --pid #{pid_file}"
         end
 
+        def mongrel_rails_command
+          if Webrat.configuration.application_command
+            Webrat.configuration.application_command
+          else
+            "mongrel_rails"
+          end
+        end
+
       end
     end
   end

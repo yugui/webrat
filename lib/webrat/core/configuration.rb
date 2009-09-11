@@ -87,6 +87,17 @@ module Webrat
       end
     end
 
+    # Allows setting of the app server's environment. Selenium uses :selenium
+    # by default. Celerity uses :celerity by default.
+    def application_environment=(environment)
+      @application_environment = environment.to_sym
+    end
+
+    # Returns the app server's environment. Defaulted to be equal to the mode.
+    def application_environment
+      @application_environment ||= self.mode
+    end
+
   end
 
 end

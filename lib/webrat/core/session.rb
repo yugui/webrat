@@ -37,6 +37,8 @@ module Webrat
       SinatraAdapter
     when :mechanize
       MechanizeAdapter
+    when :celerity
+      CeleritySession
     else
       raise WebratError.new(<<-STR)
 Unknown Webrat mode: #{Webrat.configuration.mode.inspect}

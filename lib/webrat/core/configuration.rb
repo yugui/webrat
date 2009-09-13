@@ -54,6 +54,12 @@ module Webrat
     # Set the timeout for waiting for the browser process to start
     attr_accessor :selenium_browser_startup_timeout
 
+    # Which server Celerity server is running on. Defaults to nil(server starts in webrat process and runs locally)
+    attr_accessor :celerity_proxy_address
+
+    # Which server Celerity port is running on. Defaults to 5555
+    attr_accessor :celerity_proxy_port
+
     # How many redirects to the same URL should be halted as an infinite redirect
     # loop? Defaults to 10
     attr_accessor :infinite_redirect_limit
@@ -65,6 +71,8 @@ module Webrat
       self.application_address = 'localhost'
       self.application_framework = :rails
       self.selenium_server_port = 4444
+      self.celerity_proxy_address = 'localhost'
+      self.celerity_proxy_port = 5555
       self.infinite_redirect_limit = 10
       self.selenium_browser_key = '*firefox'
       self.selenium_browser_startup_timeout = 5

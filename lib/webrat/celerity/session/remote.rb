@@ -1,5 +1,6 @@
 require 'drb/drb'
 require 'timeout'
+require 'tmpdir'
 
 module Webrat #:nodoc
   module CeleritySession #:nodoc
@@ -12,11 +13,19 @@ module Webrat #:nodoc
 
       class << self
         def proxy
-          DRbObject.new_with_uri("druby://#{proxy_address}:#{proxy_port}")
+          proxy = DRbObject.new_with_uri(proxy_uri)
+          def proxy.method_missing(msg, *args)
+            Timeout.timeout(20) {
+              #puts "msg: #{msg} #{args.inspect}"
+              super(msg, *args)
+            }
+          end
+          return proxy
         end
   
         def start #:nodoc:
           dir = File.expand_path('../../core_ext', __FILE__)
+          uri = proxy_uri
           @pid = fork do
             exec 'jruby', '-rubygems', '-rdrb/drb', '-e', <<-"EOS"
               gem "jarib-celerity", ">= 0.0.5"
@@ -26,24 +35,26 @@ module Webrat #:nodoc
               require "#{dir}/frame.rb"
               require "#{dir}/generic_field.rb"
               require "#{dir}/socket.rb"
-              Signal::trap(:TERM) {
+
+              graceful_shutdown = proc {
                 DRb.stop_service
     
-                if DRb.alive?
+                if DRb.primary_server && DRb.primary_server.alive?
                   5.times do 
                     sleep 1
-                    break unless DRb.alive?
+                    break unless DRb.primary_server && DRb.primary_server.alive?
                     DRb.thread.kill
                   end
                 end
-                if DRb.alive?
+                if DRb.primary_server && DRb.primary_server.alive?
                   Process.exit(1)
                 end
               }
-              Signal::trap(:INT){}
+              Signal.trap(:TERM, &graceful_shutdown)
+              Signal.trap(:INT, &graceful_shutdown)
     
               browser = Celerity::Browser.new(:browser => :firefox, :log_level => :off)
-              DRb.start_service('druby://#{proxy_address}:#{proxy_port}', browser)
+              DRb.start_service('#{uri}', browser)
               DRb.thread.join
             EOS
           end
@@ -57,12 +68,24 @@ module Webrat #:nodoc
           at_exit do
             catch(:done) {
               begin
-                Process.kill :TERM, pid
+                $stderr.puts "terminating #{pid}"
+                Process.kill :INT, pid
                 5.times do
-                  throw :done if Process.waitpid(pid, Process::WNOHANG)
-                  sleep 0.5
+                  if Process.waitpid(pid, Process::WNOHANG)
+                    puts "Done"
+                    throw :done 
+                  else
+                    $stderr.print "."; $stderr.flush
+                    sleep 0.5
+                  end
                 end
-                Process.kill :KILL, pid
+                puts
+
+                unless Process.waitpid(pid, Process::WNOHANG)
+                  $stderr.puts "killing #{pid}" 
+                  Process.kill :KILL, pid
+                end
+                Process.waitpid(pid)
               rescue Errno::ESRCH
                 # nothing to do
               end
@@ -72,33 +95,27 @@ module Webrat #:nodoc
   
         private
         def wait
-          $stderr.print "==> Waiting for #{proxy_address} application server on port #{proxy_port}..."
+          $stderr.print "==> Waiting for JRuby proxess waking up"
           wait_for_socket
           $stderr.print "Ready!\n"
         end
   
         def wait_for_socket
           Timeout.timeout(30) {
-            begin
-              sock = TCPSocket.open(proxy_address, proxy_port)
-              sock.close unless sock.nil?
-            rescue Errno::ECONNREFUSED, Errno::EBADF
-              $stderr.print ".";
-              $stderr.flush
-              sleep 2
-              retry
+            until File.socket?(proxy_path)
+              $stderr.print "."; $stderr.flush
+              sleep 0.5
             end
           }
         end
 
-        def proxy_address
-          Webrat.configuration.celerity_proxy_address || 'localhost'
+        def proxy_uri
+          "drbunix:#{proxy_path}"
         end
-  
-        def proxy_port
-          Webrat.configuration.celerity_proxy_port || 5555
+
+        def proxy_path
+          @proxy_path ||= "#{Dir.tmpdir}/webrat-proxy.#{$$}.#{rand}"
         end
-  
       end
     end
   end

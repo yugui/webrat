@@ -1,1 +1,1 @@
-require 'webrat/celerity'
+require 'webrat/integrations/celerity'
